@@ -14,11 +14,35 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import os
 from django.contrib import admin
-from django.urls import path, include
-from octofit_tracker import urls as api_urls
+from django.urls import path
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from django.shortcuts import redirect
+
+codespace_name = os.environ.get('CODESPACE_NAME')
+if codespace_name:
+    base_url = f"https://{codespace_name}-8000.app.github.dev/api/"
+else:
+    base_url = "http://localhost:8000/api/"
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'users': base_url + 'users/',
+        'teams': base_url + 'teams/',
+        'activities': base_url + 'activities/',
+        'workouts': base_url + 'workouts/',
+        'leaderboard': base_url + 'leaderboard/',
+    })
+
+def root_redirect(request):
+    return redirect('/api/', permanent=True)
 
 urlpatterns = [
+    path('', root_redirect),
     path('admin/', admin.site.urls),
-    path('', include('octofit_tracker.urls')),
+    path('api/', api_root, name='api_root'),
 ]
