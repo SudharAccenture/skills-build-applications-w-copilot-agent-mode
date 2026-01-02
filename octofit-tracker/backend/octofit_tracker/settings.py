@@ -87,6 +87,7 @@ DATABASES = {
         },
     }
 }
+# The database ENGINE above uses 'djongo' to connect Django ORM to MongoDB.
 
 
 # Password validation
